@@ -1,0 +1,31 @@
+fatee_server:
+  build: .
+  dockerfile: ./docker/Dockerfile
+  container_name: fatee_server
+  working_dir: /var/www/html
+  ports:
+    - "80:80"
+  volumes:
+    - .:/var/www/html
+    - ./docker/nginx_log:/var/log/nginx
+    - ./docker/php-fpm/php-fpm.log:/var/log/php-fpm.log
+    - ./docker/config/app.conf:/etc/nginx/conf.d/app.conf
+  links:
+    - mysql
+
+mysql:
+  image: mysql:5.6
+  container_name: fatee_db
+  restart: unless-stopped
+  tty: true
+  ports:
+    - "3306:3306"
+  environment:
+    MYSQL_DATABASE: fatee_app_db
+    MYSQL_USER: phucb
+    MYSQL_PASSWORD: phucb1506
+    MYSQL_ROOT_PASSWORD: phucb1506
+    SERVICE_TAGS: dev
+    SERVICE_NAME: mysql
+  volumes:
+    - ./docker/mysql:/var/lib/mysql
